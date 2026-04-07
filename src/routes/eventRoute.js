@@ -7,6 +7,7 @@ const route = Router();
 
 
 // host scope
+route.post('/create-event', verifyJWT,eventController.createEvent );
 
 
 

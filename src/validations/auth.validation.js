@@ -1,5 +1,7 @@
 import joi from "joi";
+import dotenv from "dotenv";
 
+dotenv.config();  
 const validateRegistringUser = (req, res, next) => {
   const schema = joi.object({
     firstName: joi
@@ -112,5 +114,88 @@ const validateLoginCreditials = (req,res,next) =>{
     next();
 }
 
-export { validateRegistringUser ,validateLoginCreditials};
+const validateRegistringAdmin = (req, res, next) => {
+  const schema = joi.object({
+    firstName: joi
+      .string()
+      .min(3)
+      .max(20)
+      .required()
+      .messages({
+        "string.min": "First Name must be at least 3 characters long",
+        "string.max": "First Name cannot exceed 20 characters",
+        "any.required": "First Name is required",
+      }),
+
+    lastName: joi
+      .string()
+      .min(3)
+      .max(20)
+      .required()
+      .messages({
+        "string.min": "Last Name must be at least 3 characters long",
+        "string.max": "Last Name cannot exceed 20 characters",
+        "any.required": "Last Name is required",
+      }),
+
+    email: joi
+      .string()
+      .email()
+      .required()
+      .messages({
+        "string.email": "Please provide a valid email",
+        "any.required": "Email is required",
+      }),
+
+    password: joi
+      .string()
+      .min(7)
+      .max(30)
+      .required()
+      .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+      .messages({
+        "string.min": "Password must be at least 7 characters",
+        "string.max": "Password cannot exceed 30 characters",
+        "string.pattern.base":
+          "Password must contain at least one uppercase, one lowercase, one number, and one special character",
+        "any.required": "Password is required",
+      }),
+
+      phone :joi.string()
+      .min(10)
+      .required()
+      .pattern(/^\+?[\d\s\-\(\)]+$/)
+      .messages({
+         "string.min": "Phone Number must be at least 10 characters",
+        "string.max": "Phone Number cannot exceed 10 characters",
+        'string.pattern.base': 'Please provide a valid phone number'
+
+      }),
+
+      adminKey: joi.string()
+      .required()
+      .valid(process.env.ADMIN_KEY)
+      .messages({
+        'any.only': 'Invalid admin key',
+        'any.required': 'Admin key is required'
+      })
+  });
+
+  const { error } = schema.validate(req.body, { abortEarly: false });
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: "validation failed",
+      errors: error.details.map((detail) => ({
+        field: detail.path.join("."),
+        message: detail.message,
+      })),
+    });
+  }
+  next();
+};
+
+export { validateRegistringUser ,
+  validateLoginCreditials ,
+  validateRegistringAdmin};
 

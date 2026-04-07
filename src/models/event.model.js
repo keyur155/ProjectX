@@ -26,12 +26,20 @@ const eventSchema = new mongoose.Schema({
         maxlength : 500,
         minlength : 20,
     },
-    eventDate :{
-        type : Date,
-        required : true,
-        index : true,
+    eventStartEndDate :{
+        startDate :{
+            type : Date,
+            required : true,
+            index : true,
+        },
+        endDate :{
+            type : Date,
+            required : true,
+           
+        }
+        
     },
-    location :[
+    location :
         {
         type: {
                 type: String,
@@ -50,14 +58,13 @@ const eventSchema = new mongoose.Schema({
             },
 
         },
-         address: String,
+        address: String,
         city: String,
         state: String,
-        postalCode: String
-                
-        }
+        postalCode: String            
+        },
         
-    ],
+    
     
     enableOfflineTickets :{
         type : Boolean,
@@ -71,9 +78,13 @@ const eventSchema = new mongoose.Schema({
     sold: { type: Number, default: 0 },
     price: { type: Number, required: true },
     currency: { type: String, default: "INR" },
-    maxPerUser: { type: Number, default: 5 }
+    maxPerUser: { type: Number, default: 5 },
+    isActive: { type: Boolean, default: true } 
   }
 ],
+
+views: { type: Number, default: 0 },
+likes: { type: Number, default: 0 },
     
    
     isSoldOut :{
@@ -121,6 +132,12 @@ const eventSchema = new mongoose.Schema({
        }
     }],
     
+    slug:{
+        type: String,
+        unique:true,
+        required: true,
+        index:true
+    },
     rating :{
         type : Number,
         default : 0,
@@ -147,7 +164,7 @@ const eventSchema = new mongoose.Schema({
             default : Date.now,
         }
     }],
-    rulesandGuidelines :[{
+    rulesandGuidelines :{
         commonRules :{
             type : [String],
             required : true,
@@ -158,7 +175,7 @@ const eventSchema = new mongoose.Schema({
         },
         default: { commonRules: [], additional: {} }
         
-    }],
+    },
 
     maxCapacity: Number,
     totalSold: { type: Number, default: 0 },
@@ -168,10 +185,24 @@ const eventSchema = new mongoose.Schema({
         enum: ["draft", "published", "cancelled", "completed"],
         default: "draft"
     },
+    cancellationPolicy: {
+        type: String,
+        enum: ["flexible", "moderate", "strict"],
+        required:true,
+        default: "moderate"
+    },
 
     isPublished :{
         type : Boolean,
         default : false,    
+    },
+    isFeatured:{
+      type:Boolean,
+      default :false
+    },
+    isSponsered:{
+      type:Boolean,
+      default :false
     },
     createdAt :{
         type : Date,
@@ -187,48 +218,14 @@ const eventSchema = new mongoose.Schema({
     }
         
 );   
+
+eventSchema.pre('save',function(){
+        const city = this.location?.city || "event";
+        const year = new Date(this.eventStartEndDate.startDate).getFullYear();
+        this.slug =  slugify(`${this.eventTitle}-${city}-${year}`, {
+                            lower: true,
+                            strict: true,
+                            });
+                        })
 const Event = mongoose.model("Event", eventSchema);
 export default Event;
-
-
-//  ticketsAvailable :[
-//         { 
-//             stock_ticket :{
-//                 type : Number,
-//                 required : true,
-//                 min : 0,
-//             },
-//             sponsored_ticket :{
-//                 type : Number,
-//                 required : true,
-//                 min : 0,
-//             },
-//            vip_ticket :{
-//                 type : Number,
-//                 required : true,
-//                 min : 0,
-//             },
-//             tier1_ticket :{
-//                 type : Number,
-                
-//                 min : 0,
-//             },
-//             tier2_ticket :{
-//                 type : Number,
-                
-//                 min : 0,
-//                 },
-//             tier3_ticket :{
-//                 type : Number,
-               
-//                 min : 0,
-//                 },
-//             tier4_ticket :{
-//                 type : Number,
-//                 min : 0,
-                
-//                 }
-
-
-//         }
-//     ],

@@ -28,9 +28,26 @@ app.use((req, res, next) => {
 
 //  route import
 import authRoute from "./routes/auth.route.js";
+import mediaRoute from "./routes/media.route.js";
+
+// admin import
+import adminRoute from "./routes/admin.route.js";
+
+
+// host import
+import eventRoute from "./routes/eventRoute.js";
+import userRoute from "./routes/user.route.js";
 
 //  router declarations
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/media", mediaRoute);
+
+// host route
+app.use("/api/v1/event",eventRoute);
+
+
+// admin route
+app.use("/api/v1/admin",adminRoute);
 
 // Centralized error handler (catches bad JSON too)
 app.use((err, req, res, next) => {

@@ -51,6 +51,10 @@ const userSchema = new mongoose.Schema(
         default : "",
            
        }, 
+       kycStatus :{
+        type : String,
+        enum : ["pending", "verified", "rejected"], 
+       },
        isSubscribed:{
         type : Boolean,
         default : false,
