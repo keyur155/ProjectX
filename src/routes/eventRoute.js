@@ -4,6 +4,9 @@ import * as eventController from '../controllers/event.controller.js'
 
 const route = Router();
 
+// user Scope
+route.get("/event", eventController.getEvents);
+route.get("/event/:slug",eventController.getEventByslug);
 
 
 // host scope

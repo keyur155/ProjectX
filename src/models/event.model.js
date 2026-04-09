@@ -63,12 +63,14 @@ const eventSchema = new mongoose.Schema({
         state: String,
         postalCode: String            
         },
-        
-    
-    
     enableOfflineTickets :{
         type : Boolean,
         default : false,
+    },
+    trendingScrore:{
+        type:Number,
+        default:0,
+        index:true
     },
 
     tickets: [
@@ -83,9 +85,9 @@ const eventSchema = new mongoose.Schema({
   }
 ],
 
-views: { type: Number, default: 0 },
-likes: { type: Number, default: 0 },
-    
+    views: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
+        
    
     isSoldOut :{
         type : Boolean,
@@ -227,5 +229,6 @@ eventSchema.pre('save',function(){
                             strict: true,
                             });
                         })
+eventSchema.index({ "location.city": 1, createdAt: -1 });
 const Event = mongoose.model("Event", eventSchema);
 export default Event;

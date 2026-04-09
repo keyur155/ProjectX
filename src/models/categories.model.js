@@ -1,4 +1,5 @@
 
+
 import mongoose from "mongoose";
 import slugify from "slugify";
 const categorySchema = new mongoose.Schema(
@@ -59,5 +60,72 @@ categorySchema.pre('save', function(){
   }
 });
 
+
+
+// subCategory 
+const subCategorySchema = new mongoose.Schema(
+    {
+        Category:{
+          type : mongoose.Schema.Types.ObjectId,
+          ref : "Category",
+          required :true
+        },
+        subCategoryName:{
+          type: String,
+          required : true,
+          trim:true,
+          unique: true
+        },
+        title:{
+          type: String,
+          required: true,
+          trim:true,
+          unique: true
+        },
+        description:{
+          type: String,
+          required : true,
+          trim:true,
+
+        },
+        image: {
+              url:{
+               type:String,
+               required :true
+            },
+            publicId:{
+              type:String,
+              required:true
+            }
+  
+          },
+          slug: {
+              type: String,
+              unique: true,
+              index:true
+        },
+        isActive: {   
+          type: Boolean,
+          default: true
+        },
+
+    },
+    {
+      timestamps:true
+    }
+)
+
+
+subCategorySchema.pre("save", function(){
+  if(!this.slug){
+    this.slug = slugify(`${this.subCategoryName} ${this.title}`,{lower:true,strict:true,trim:true})
+  }
+})
+
+
+
 const Category = mongoose.model("Category", categorySchema);
-export default Category;
+const SubCategory = mongoose.model("SubCategory", subCategorySchema);
+
+export default {Category,
+  SubCategory};
